@@ -1,4 +1,4 @@
-# PulseVault (AuctionPulse Clone) — Real-Time Soft-Close & Escrow Auction Exchange
+# PulseVault (AuctionPulse) — Real-Time Soft-Close & Escrow Auction Exchange
 
 **PulseVault** is a full-stack, real-time online auction platform built with a turn-based soft-close bidding engine, WebSocket room synchronization, automated settlement lifecycles, and a zero-dependency local escrow and media architecture.
 
