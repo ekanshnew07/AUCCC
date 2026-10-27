@@ -2,13 +2,6 @@
  * Module: backend/sockets/createSocketServer.js
  * Purpose: Configures realtime socket behavior and related notification wiring.
  */
-// ---------------------------------------------------------------------------
-// Module: backend/sockets/createSocketServer.js
-// Purpose: create Socket Server
-// This file belongs to the modular backend structure and isolates one clear
-// responsibility so the overall system is easier to understand and maintain.
-// ---------------------------------------------------------------------------
-
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 
@@ -17,9 +10,11 @@ const User = require('../models/User');
 const STATIC_ADMIN_DB_ID = '000000000000000000000999';
 
 const createSocketServer = (server, allowedOrigins) => {
+  const isProd = (process.env.NODE_ENV || 'development') === 'production';
   const io = new Server(server, {
     cors: {
-      origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+      origin: isProd ? (allowedOrigins.length > 0 ? allowedOrigins : false) : true,
+      credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
     },
   });
@@ -102,5 +97,3 @@ module.exports = {
   STATIC_ADMIN_DB_ID,
   createSocketServer,
 };
-
-
