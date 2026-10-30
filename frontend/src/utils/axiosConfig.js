@@ -1,24 +1,41 @@
 /**
  * Module: utils/axiosConfig.js
- * Purpose: Stores static configuration values used by the surrounding feature modules.
+ * Purpose: Environment-driven API & Socket.IO configuration with shared auth/error interceptors.
  */
 import axios from 'axios';
 
-const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const rawConfiguredApiUrl = String(
+  import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_BACKEND_URL ||
+    ''
+)
+  .trim()
+  .replace(/\/+$/, '');
+
+export const apiBaseUrl = rawConfiguredApiUrl
+  ? rawConfiguredApiUrl.endsWith('/api')
+    ? rawConfiguredApiUrl
+    : `${rawConfiguredApiUrl}/api`
+  : '/api';
 
 // Shared API client:
 // - injects auth tokens
 // - emits global notification events
 // - detects session expiry in one place
-
 const instance = axios.create({
   baseURL: apiBaseUrl,
-  timeout: 15000,
+  timeout: 30000,
+  withCredentials: true,
 });
 
-export const socketUrl =
+export const socketUrl = String(
   import.meta.env.VITE_SOCKET_URL ||
-  apiBaseUrl.replace(/\/api\/?$/, '');
+    import.meta.env.VITE_BACKEND_URL ||
+    rawConfiguredApiUrl.replace(/\/api\/?$/, '') ||
+    (typeof window !== 'undefined' ? window.location.origin : '')
+)
+  .trim()
+  .replace(/\/+$/, '');
 
 const parseStoredUser = () => {
   try {
@@ -94,8 +111,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     const requestUrl = String(error.config?.url || '');
-    const isAuthAction =
-      requestUrl.includes('/auth/');
+    const isAuthAction = requestUrl.includes('/auth/');
 
     const status = error.response?.status;
     const serverMessage = String(error.response?.data?.message || '').toLowerCase();
@@ -143,5 +159,3 @@ instance.interceptors.response.use(
 );
 
 export default instance;
-
-

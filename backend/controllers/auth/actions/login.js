@@ -2,13 +2,6 @@
  * Module: backend/controllers/auth/actions/login.js
  * Purpose: Implements one focused controller action so endpoint behavior stays separated by responsibility.
  */
-// ---------------------------------------------------------------------------
-// Module: backend/controllers/auth/actions/login.js
-// Purpose: login
-// This file belongs to the modular backend structure and isolates one clear
-// responsibility so the overall system is easier to understand and maintain.
-// ---------------------------------------------------------------------------
-
 const User = require('../../../models/User');
 const { validateTurnstileToken } = require('../../../utils/turnstile');
 const { generateToken, serializeUser } = require('../authHelpers');
@@ -37,7 +30,7 @@ const login = async (req, res) => {
     }
 
     const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPass = process.env.ADMIN_PASS;
+    const adminPass = process.env.ADMIN_PASS || process.env.ADMIN_PASSWORD;
 
     if (adminEmail && adminPass && email === adminEmail && password === adminPass) {
       return res.json({
@@ -69,5 +62,3 @@ const login = async (req, res) => {
 };
 
 module.exports = login;
-
-

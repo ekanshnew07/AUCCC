@@ -27,7 +27,12 @@ const uploadAuctionImages = async (files) => {
     const uploadsDir = path.join(__dirname, '..', '..', 'uploads', 'auctions');
     fs.mkdirSync(uploadsDir, { recursive: true });
     const port = process.env.PORT || 5000;
-    const baseUrl = process.env.PUBLIC_API_URL || `http://localhost:${port}`;
+    const baseUrl = (
+      process.env.PUBLIC_API_URL ||
+      process.env.BACKEND_URL ||
+      process.env.RENDER_EXTERNAL_URL ||
+      `http://localhost:${port}`
+    ).replace(/\/+$/, '');
 
     return files.map((file) => {
       const mime = file.mimetype || 'image/png';

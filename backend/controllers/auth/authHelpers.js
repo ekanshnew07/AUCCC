@@ -63,7 +63,12 @@ const uploadAvatarImage = async (fileBuffer, mimetype = 'image/png') => {
     fs.mkdirSync(uploadsDir, { recursive: true });
     fs.writeFileSync(path.join(uploadsDir, filename), fileBuffer);
     const port = process.env.PORT || 5000;
-    const baseUrl = process.env.PUBLIC_API_URL || `http://localhost:${port}`;
+    const baseUrl = (
+      process.env.PUBLIC_API_URL ||
+      process.env.BACKEND_URL ||
+      process.env.RENDER_EXTERNAL_URL ||
+      `http://localhost:${port}`
+    ).replace(/\/+$/, '');
     return {
       secure_url: `${baseUrl}/uploads/avatars/${filename}`,
     };

@@ -68,6 +68,7 @@ export const useAuctionDetails = (id) => {
 
     const socket = io(socketUrl, {
       transports: ['websocket', 'polling'],
+      withCredentials: true,
       auth: user?.token ? { token: user.token } : undefined,
     });
     socketRef.current = socket;

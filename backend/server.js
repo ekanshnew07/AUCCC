@@ -28,10 +28,9 @@ if (allowedOrigins.length === 0 && isProduction) {
   console.warn('CORS warning: no allowed origins configured. Browser cross-origin requests will be rejected.');
 }
 
-connectDB();
-verifyEmailTransport();
-
 const app = express();
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
 const io = createSocketServer(server, allowedOrigins);
 
@@ -102,12 +101,19 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-registerBackgroundJobs(io);
-
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+
+const startServer = async () => {
+  await connectDB();
+  verifyEmailTransport();
+  registerBackgroundJobs(io);
+
+  server.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  });
+};
+
+startServer();
 
 const shutdown = async (signal) => {
   console.log(`Received ${signal}. Starting graceful shutdown...`);

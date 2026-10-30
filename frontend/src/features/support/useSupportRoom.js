@@ -24,7 +24,10 @@ export const useSupportRoom = ({ enabled = true, user, initialMessages = [] }) =
   useEffect(() => {
     if (!enabled) return undefined;
 
-    const socket = io(socketUrl, { transports: ['websocket', 'polling'] });
+    const socket = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
+    });
     socketRef.current = socket;
 
     const joinPayload = {

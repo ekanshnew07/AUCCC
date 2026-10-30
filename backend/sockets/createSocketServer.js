@@ -6,16 +6,21 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
+const { isAllowedOrigin } = require('../bootstrap/cors');
 
 const STATIC_ADMIN_DB_ID = '000000000000000000000999';
 
 const createSocketServer = (server, allowedOrigins) => {
-  const isProd = (process.env.NODE_ENV || 'development') === 'production';
   const io = new Server(server, {
     cors: {
-      origin: isProd ? (allowedOrigins.length > 0 ? allowedOrigins : false) : true,
+      origin(origin, callback) {
+        if (isAllowedOrigin(origin, allowedOrigins)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+      },
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     },
   });
 

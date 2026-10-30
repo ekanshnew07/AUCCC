@@ -35,6 +35,7 @@ export const useAppRuntimeEffects = (user) => {
 
     const socket = io(socketUrl, {
       transports: ['websocket', 'polling'],
+      withCredentials: true,
       auth: { token: user.token },
     });
 
@@ -123,4 +124,3 @@ export const useAppRuntimeEffects = (user) => {
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [dispatch, user?.token]);
 };
-
