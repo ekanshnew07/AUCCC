@@ -8,15 +8,8 @@ const SupportTicket = require('../models/SupportTicket');
 
 const seedDemoData = async () => {
   try {
-    const existingUsers = await User.countDocuments();
-    if (existingUsers > 0) {
-      return;
-    }
-
-    console.log('Seeding initial AuctionPulse / BidPulse demo dataset...');
-
-    const [alex, maya, liam] = await Promise.all([
-      User.create({
+    const demoUsersData = [
+      {
         name: 'Alex Vance',
         email: 'alex@bidpulse.io',
         password: 'Password@123',
@@ -33,8 +26,8 @@ const seedDemoData = async () => {
         occupation: 'Venture Collector',
         avatarEmoji: '⚡',
         avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
-      }),
-      User.create({
+      },
+      {
         name: 'Maya Lin',
         email: 'maya@bidpulse.io',
         password: 'Password@123',
@@ -51,8 +44,8 @@ const seedDemoData = async () => {
         occupation: 'Luxury Horology & Tech Curator',
         avatarEmoji: '💎',
         avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
-      }),
-      User.create({
+      },
+      {
         name: 'Liam Sterling',
         email: 'liam@bidpulse.io',
         password: 'Password@123',
@@ -69,8 +62,29 @@ const seedDemoData = async () => {
         occupation: 'Archive Specialist',
         avatarEmoji: '🔥',
         avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
-      }),
-    ]);
+      },
+    ];
+
+    const usersByEmail = {};
+    for (const data of demoUsersData) {
+      let existing = await User.findOne({ email: data.email });
+      if (!existing) {
+        existing = await User.create(data);
+        console.log(`Created demo user: ${data.email}`);
+      }
+      usersByEmail[data.email] = existing;
+    }
+
+    const alex = usersByEmail['alex@bidpulse.io'];
+    const maya = usersByEmail['maya@bidpulse.io'];
+    const liam = usersByEmail['liam@bidpulse.io'];
+
+    const existingAuctions = await Auction.countDocuments();
+    if (existingAuctions > 0) {
+      return;
+    }
+
+    console.log('Seeding initial AuctionPulse / BidPulse demo dataset...');
 
     const now = Date.now();
 

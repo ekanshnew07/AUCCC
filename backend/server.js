@@ -59,6 +59,17 @@ app.get('/api/dev/mailbox', (_req, res) => {
   res.json({ count: getLocalMailbox().length, emails: getLocalMailbox() });
 });
 
+// Endpoint to trigger demo data seeding on demand
+app.post('/api/dev/seed-demo', async (_req, res) => {
+  try {
+    const { seedDemoData } = require('./config/seedDemoData');
+    await seedDemoData();
+    res.json({ success: true, message: 'Demo data seeded successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 registerApiRoutes(app);
 
 app.get('/', (_req, res) => {
